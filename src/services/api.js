@@ -1,23 +1,21 @@
 import axios from 'axios';
 
-const VITE_BASE_URL = 'https://api.personaldev.id.vn';
 
 // 1. Khởi tạo một Axios instance với cấu hình mặc định
 const axiosClient = axios.create({
-  baseURL: VITE_BASE_URL,
+  baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  // timeout: 10000, // Bạn có thể bật tính năng này nếu muốn set timeout cho request
+  imeout: 10000, // Bạn có thể bật tính năng này nếu muốn set timeout cho request
 });
 
-// 2. Thiết lập Interceptors
 
-// Interceptor cho request (Có thể dùng để đính kèm Token Auth sau này)
 axiosClient.interceptors.request.use(
   (config) => {
     // Ví dụ: const token = localStorage.getItem('token');
     // if (token) config.headers.Authorization = `Bearer ${token}`;
+
     return config;
   },
   (error) => {
@@ -44,40 +42,51 @@ axiosClient.interceptors.response.use(
 // 3. Export các API methods
 export const api = {
   // Dashboard
-  getOverview: () => axiosClient.get('/api/admin/tong-quan'),
+  getOverview: () => axiosClient.get('/admin/tong-quan'),
 
   // Bookings
-  getBookings: (params) => axiosClient.get('/api/admin/dang-ky', { params }),
-  getBookingDetail: (id) => axiosClient.get(`/api/admin/dang-ky/${id}`),
-  updateBooking: (id, data) => axiosClient.patch(`/api/admin/dang-ky/${id}`, data),
-  changeBookingStatus: (id, data) => axiosClient.patch(`/api/admin/dang-ky/${id}/trang-thai`, data),
-  deleteBooking: (id) => axiosClient.delete(`/api/admin/dang-ky/${id}`),
+  getBookings: (params) => axiosClient.get('/admin/dang-ky', { params }),
+  getBookingDetail: (id) => axiosClient.get(`/admin/dang-ky/${id}`),
+  updateBooking: (id, data) => axiosClient.patch(`/admin/dang-ky/${id}`, data),
+  changeBookingStatus: (id, data) => axiosClient.patch(`/admin/dang-ky/${id}/trang-thai`, data),
+  deleteBooking: (id) => axiosClient.delete(`/admin/dang-ky/${id}`),
 
   // Users
-  getUsers: (params) => axiosClient.get('/api/admin/nguoi-dung', { params }),
-  getUserDetail: (id) => axiosClient.get(`/api/admin/nguoi-dung/${id}`),
-  changeUserStatus: (id, data) => axiosClient.patch(`/api/admin/nguoi-dung/${id}/trang-thai`, data),
+  getUsers: (params) => axiosClient.get('/admin/nguoi-dung', { params }),
+  getUserDetail: (id) => axiosClient.get(`/admin/nguoi-dung/${id}`),
+  changeUserStatus: (id, data) => axiosClient.patch(`/admin/nguoi-dung/${id}/trang-thai`, data),
 
   // Specialties
-  getSpecialties: (params) => axiosClient.get('/api/admin/chuyen-khoa', { params }),
-  createSpecialty: (data) => axiosClient.post('/api/admin/chuyen-khoa', data),
-  updateSpecialty: (mack, data) => axiosClient.put(`/api/admin/chuyen-khoa/${mack}`, data),
-  changeSpecialtyStatus: (mack, data) => axiosClient.patch(`/api/admin/chuyen-khoa/${mack}/trang-thai`, data),
+  getSpecialties: (params) => axiosClient.get('/admin/chuyen-khoa', { params }),
+  createSpecialty: (data) => axiosClient.post('/admin/chuyen-khoa', data),
+  updateSpecialty: (mack, data) => axiosClient.put(`/admin/chuyen-khoa/${mack}`, data),
+  changeSpecialtyStatus: (mack, data) => axiosClient.patch(`/admin/chuyen-khoa/${mack}/trang-thai`, data),
 
   // Equipment
-  getEquipment: (params) => axiosClient.get('/api/admin/thiet-bi', { params }),
-  createEquipment: (data) => axiosClient.post('/api/admin/thiet-bi', data),
-  updateEquipment: (id, data) => axiosClient.put(`/api/admin/thiet-bi/${id}`, data),
-  changeEquipmentStatus: (id, data) => axiosClient.patch(`/api/admin/thiet-bi/${id}/trang-thai`, data),
+  getEquipment: (params) => axiosClient.get('/admin/thiet-bi', { params }),
+  createEquipment: (data) => axiosClient.post('/admin/thiet-bi', data),
+  updateEquipment: (id, data) => axiosClient.put(`/admin/thiet-bi/${id}`, data),
+  changeEquipmentStatus: (id, data) => axiosClient.patch(`/admin/thiet-bi/${id}/trang-thai`, data),
 
   // Doctors
-  getDoctors: (params) => axiosClient.get('/api/admin/bac-si', { params }),
-  getDoctorDetail: (manv) => axiosClient.get(`/api/admin/bac-si/${manv}`),
-  updateDoctorInfo: (manv, data) => axiosClient.put(`/api/admin/bac-si/${manv}/thong-tin`, data),
-
+  getDoctors: (params) => axiosClient.get('/admin/bac-si', { params }),
+  getDoctorDetail: (manv) => axiosClient.get(`/admin/bac-si/${manv}`),
+  updateDoctorInfo: (manv, data) => axiosClient.put(`/admin/bac-si/${manv}/thong-tin`, data),
+  addDoctors: (data) => axiosClient.post('/admin/bac-si', data),
   // Notifications
-  sendAllUsersNotification: (data) => axiosClient.post('/api/thongbao/all-users', data),
+  sendAllUsersNotification: (data) => axiosClient.post('/thongbao/all-users', data),
 
   // Lưu ý: Request này method POST nhưng không có body (gửi null), chỉ có query parameters
-  scheduleNotification: (params) => axiosClient.post('/api/thongbao/schedule-delayed', null, { params })
+  scheduleNotification: (params) => axiosClient.post('/thongbao/schedule-delayed', null, { params }),
+
+  getUrl(path) {
+    if (!path) return "";
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+      return path;
+    }
+    const encodedPath = encodeURIComponent(path);
+
+    return `${import.meta.env.VITE_BASE_URL}/file/anh?path=${encodedPath}`;
+  }
+
 };
