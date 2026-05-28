@@ -44,7 +44,7 @@ axiosClient.interceptors.response.use(
     const originalRequest = error.config;
 
     if (error.response?.status === 401 && !originalRequest._retry) {
-      if (originalRequest.url?.includes('/admin/lam-moi-token')) {
+      if (originalRequest.url?.includes('/auth/lam-moi-token')) {
         processQueue(error);
         forceLogout();
         return Promise.reject(error);
@@ -65,13 +65,16 @@ axiosClient.interceptors.response.use(
 
       try {
         const res = await axios.post(
-          `${BASE_URL}/admin/lam-moi-token`,
+          `${BASE_URL}/auth/lam-moi-token`,
           {},
           { withCredentials: true }
         );
-
-        const newToken = res.data?.data || res.data?.token || res.data?.accessToken;
-        if (!newToken) throw new Error('Không nhận được token mới');
+        
+        const newToken = res.data?.data?.accessToken || res.data?.accessToken;
+        if (!newToken) {
+          console.error("Không tìm thấy accessToken trong response:", res.data);
+          throw new Error('Không nhận được token mới');
+        }
 
         localStorage.setItem('token', newToken);
         axiosClient.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
@@ -98,7 +101,7 @@ axiosClient.interceptors.response.use(
 export const api = {
   // Auth
   login: (data) => axiosClient.post('/admin/dang-nhap', data), 
-  Logout: () => axiosClient.post('/admin/dang-xuat'),
+  Logout: () => axiosClient.post('/auth/dang-xuat'),
 
   // Dashboard
   getOverview: () => axiosClient.get('/admin/tong-quan'),
