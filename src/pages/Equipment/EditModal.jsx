@@ -28,7 +28,6 @@ export default function EditModal({ item, onClose, onSaved }) {
     e.target.value = "";
   };
 
-  // Xóa ảnh: gọi API xóa file trên server rồi clear state
   const handleRemoveImage = async () => {
     const pathToDelete = form.hinhanh;
     handleChange("hinhanh", "");
@@ -56,10 +55,9 @@ export default function EditModal({ item, onClose, onSaved }) {
     setErr("");
     let hinhanhPath = form.hinhanh.trim();
     if (pendingFile) {
-      // Nếu đang thay ảnh mới → xóa ảnh cũ trước (nếu có)
       const oldPath = item?.hinhanh?.trim();
       if (oldPath && oldPath !== hinhanhPath) {
-        try { await api.deleteFile(oldPath); } catch { /* bỏ qua lỗi xóa */ }
+        try { await api.deleteFile(oldPath); } catch { }
       }
       try {
         const uploadRes = await api.uploadFile(pendingFile, "HinhAnh_ThietBi");

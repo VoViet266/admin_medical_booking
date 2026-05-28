@@ -1,13 +1,12 @@
 import axios from 'axios';
-import { LogOut } from 'lucide-react';
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-  withCredentials: true,
-  imeout: 10000, 
+  baseURL: BASE_URL,
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,  
+  timeout: 10000,
 });
 
 
@@ -15,29 +14,86 @@ axiosClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) config.headers.Authorization = `Bearer ${token}`;
-
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// Interceptor cho response (Xử lý data trả về và bắt lỗi chung)
+let isRefreshing = false;           // đang gọi refresh hay chưa
+let pendingQueue = [];              // các request đang chờ token mới
+
+const processQueue = (error, newToken = null) => {
+  pendingQueue.forEach(({ resolve, reject }) => {
+    if (error) reject(error);
+    else resolve(newToken);
+  });
+  pendingQueue = [];
+};
+
+const forceLogout = () => {
+  localStorage.removeItem('token');
+  window.location.replace('/login');
+};
+
 axiosClient.interceptors.response.use(
   (response) => {
-    // Trả về trực tiếp data để giống với behavior của hàm fetch cũ
-    if (response && response.data) {
-      return response.data;
-    }
+    if (response && response.data) return response.data;
     return response;
   },
-  (error) => {
-    // Xử lý lỗi tập trung
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (originalRequest.url?.includes('/admin/lam-moi-token')) {
+        processQueue(error);
+        forceLogout();
+        return Promise.reject(error);
+      }
+
+      originalRequest._retry = true;
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          pendingQueue.push({ resolve, reject });
+        }).then((newToken) => {
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return axiosClient(originalRequest);
+        }).catch((err) => Promise.reject(err));
+      }
+
+      isRefreshing = true;
+
+      try {
+        const res = await axios.post(
+          `${BASE_URL}/admin/lam-moi-token`,
+          {},
+          { withCredentials: true }
+        );
+
+        const newToken = res.data?.data || res.data?.token || res.data?.accessToken;
+        if (!newToken) throw new Error('Không nhận được token mới');
+
+        localStorage.setItem('token', newToken);
+        axiosClient.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+
+        processQueue(null, newToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return axiosClient(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError);
+        forceLogout();
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+      
     const message = error.response?.data?.message || error.message || 'Something went wrong';
     return Promise.reject(new Error(message));
   }
 );
+
 
 export const api = {
   // Auth
