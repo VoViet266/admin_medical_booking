@@ -45,11 +45,8 @@ export default function Notifications() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-gray-900">Quản lý Thông báo</h2>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        
-        {/* Send to All Users */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center mb-4">
             <div className="bg-blue-100 p-2 rounded-lg">
@@ -60,29 +57,29 @@ export default function Notifications() {
           <form onSubmit={handleSendAll} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">Tiêu đề</label>
-              <input 
+              <input
                 required
-                type="text" 
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border px-3 py-2" 
-                placeholder="Nhập tiêu đề thông báo..." 
+                type="text"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border px-3 py-2"
+                placeholder="Nhập tiêu đề thông báo..."
                 value={allUsersForm.tieuDe}
                 onChange={e => setAllUsersForm({...allUsersForm, tieuDe: e.target.value})}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Nội dung</label>
-              <textarea 
+              <textarea
                 required
                 rows={4}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border px-3 py-2" 
-                placeholder="Nhập nội dung chi tiết..." 
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm border px-3 py-2"
+                placeholder="Nhập nội dung chi tiết..."
                 value={allUsersForm.noiDung}
                 onChange={e => setAllUsersForm({...allUsersForm, noiDung: e.target.value})}
               />
             </div>
-            <button 
+            <button
               disabled={loading}
-              type="submit" 
+              type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
             >
               Phát thông báo
@@ -102,22 +99,22 @@ export default function Notifications() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">ID Người dùng</label>
-                <input 
+                <input
                   required
-                  type="number" 
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border px-3 py-2" 
-                  placeholder="ID User" 
+                  type="number"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border px-3 py-2"
+                  placeholder="ID User"
                   value={scheduledForm.userId}
                   onChange={e => setScheduledForm({...scheduledForm, userId: e.target.value})}
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Thời gian chờ (giây)</label>
-                <input 
+                <input
                   required
-                  type="number" 
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border px-3 py-2" 
-                  placeholder="VD: 60" 
+                  type="number"
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border px-3 py-2"
+                  placeholder="VD: 60"
                   value={scheduledForm.delaySeconds}
                   onChange={e => setScheduledForm({...scheduledForm, delaySeconds: e.target.value})}
                 />
@@ -125,29 +122,29 @@ export default function Notifications() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Tiêu đề</label>
-              <input 
+              <input
                 required
-                type="text" 
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border px-3 py-2" 
-                placeholder="Nhập tiêu đề thông báo..." 
+                type="text"
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border px-3 py-2"
+                placeholder="Nhập tiêu đề thông báo..."
                 value={scheduledForm.tieuDe}
                 onChange={e => setScheduledForm({...scheduledForm, tieuDe: e.target.value})}
               />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700">Nội dung</label>
-              <textarea 
+              <textarea
                 required
                 rows={3}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border px-3 py-2" 
-                placeholder="Nhập nội dung chi tiết..." 
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm border px-3 py-2"
+                placeholder="Nhập nội dung chi tiết..."
                 value={scheduledForm.noiDung}
                 onChange={e => setScheduledForm({...scheduledForm, noiDung: e.target.value})}
               />
             </div>
-            <button 
+            <button
               disabled={loading}
-              type="submit" 
+              type="submit"
               className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
             >
               Lên lịch gửi

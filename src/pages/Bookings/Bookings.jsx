@@ -24,7 +24,7 @@ export default function Bookings() {
     try {
       const params = { page, pageSize: 20 };
       if (statusFilter !== "") params.trangThai = statusFilter;
-      if (searchTerm.trim() !== "") params.search = searchTerm.trim();
+      if (searchTerm.trim() !== "") params.keyword = searchTerm.trim();
       if (dateFilter !== "") params.ngay = dateFilter;
 
       const response = await api.getBookings(params);
@@ -79,19 +79,6 @@ export default function Bookings() {
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc chắn muốn xóa đăng ký này?")) return;
-    try {
-      const res = await api.deleteBooking(id);
-      if (res.success || res) {
-        fetchBookings();
-      } else {
-        alert(res.message);
-      }
-    } catch (err) {
-      alert(err.message);
-    }
-  };
 
   const handleSave = async (formData) => {
     if (!selectedBooking) return;
@@ -166,7 +153,7 @@ export default function Bookings() {
           loading={loading}
           onView={handleView}
           onEdit={handleEdit}
-          onDelete={handleDelete}
+
           onStatusChange={handleQuickStatusChange}
         />
         {/* Pagination */}

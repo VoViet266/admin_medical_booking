@@ -5,7 +5,6 @@ export default function BookingTable({
   loading,
   onView,
   onEdit,
-  onDelete,
   onStatusChange,
 }) {
   return (
@@ -101,13 +100,6 @@ export default function BookingTable({
                     title="Sửa đổi"
                   >
                     <Edit size={18} />
-                  </button>
-                  <button
-                    onClick={() => onDelete(item.maDk)}
-                    className="text-red-600 hover:text-red-900 mx-1 p-1"
-                    title="Xóa"
-                  >
-                    <Trash2 size={18} />
                   </button>
                 </td>
               </tr>

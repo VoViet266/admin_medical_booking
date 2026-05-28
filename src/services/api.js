@@ -1,20 +1,18 @@
 import axios from 'axios';
 
-
-// 1. Khởi tạo một Axios instance với cấu hình mặc định
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  imeout: 10000, // Bạn có thể bật tính năng này nếu muốn set timeout cho request
+  imeout: 10000, 
 });
 
 
 axiosClient.interceptors.request.use(
   (config) => {
-    // Ví dụ: const token = localStorage.getItem('token');
-    // if (token) config.headers.Authorization = `Bearer ${token}`;
+    const token = localStorage.getItem('token');
+    if (token) config.headers.Authorization = `Bearer ${token}`;
 
     return config;
   },
@@ -39,8 +37,10 @@ axiosClient.interceptors.response.use(
   }
 );
 
-// 3. Export các API methods
 export const api = {
+  // Auth
+  login: (data) => axiosClient.post('/admin/dang-nhap', data), 
+
   // Dashboard
   getOverview: () => axiosClient.get('/admin/tong-quan'),
 
@@ -49,7 +49,7 @@ export const api = {
   getBookingDetail: (id) => axiosClient.get(`/admin/dang-ky/${id}`),
   updateBooking: (id, data) => axiosClient.patch(`/admin/dang-ky/${id}`, data),
   changeBookingStatus: (id, data) => axiosClient.patch(`/admin/dang-ky/${id}/trang-thai`, data),
-  deleteBooking: (id) => axiosClient.delete(`/admin/dang-ky/${id}`),
+
 
   // Users
   getUsers: (params) => axiosClient.get('/admin/nguoi-dung', { params }),

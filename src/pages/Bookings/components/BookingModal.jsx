@@ -18,6 +18,8 @@ export default function BookingModal({
     tenCk: "",
     trangThai: 0,
     trieuChung: "",
+    cmnd: "",
+    mathe: "",
   });
 
   useEffect(() => {
@@ -31,6 +33,8 @@ export default function BookingModal({
         tenCk: booking.tenCk || "",
         trangThai: booking.trangThai ?? 0,
         trieuChung: booking.trieuChung || "",
+        mathe: booking.mathe || "",
+        cmnd: booking.cmnd || "",
       });
     }
   }, [booking]);
@@ -88,6 +92,36 @@ export default function BookingModal({
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
+                Căn Cước Công Dân
+              </label>
+              <input
+                type="text"
+                value={formData.cmnd}
+                onChange={(e) =>
+                  setFormData({ ...formData, cmnd: e.target.value })
+                }
+                readOnly={mode === "view"}
+                className="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+                disabled={mode === "view"}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Thẻ bảo hiểm
+              </label>
+              <input
+                type="text"
+                value={formData.mathe}
+                onChange={(e) =>
+                  setFormData({ ...formData, mathe: e.target.value })
+                }
+                readOnly={mode === "view"}
+                className="w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:text-gray-500"
+                disabled={mode === "view"}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
                 Ngày khám
               </label>
               <input
@@ -103,7 +137,7 @@ export default function BookingModal({
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Giờ khám (Time Slot)
+                Giờ đặt khám
               </label>
               <input
                 type="datetime-local"

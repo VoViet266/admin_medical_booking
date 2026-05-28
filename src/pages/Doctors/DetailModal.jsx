@@ -11,8 +11,8 @@ export default function DetailModal({ item, onClose }) {
       style={{ background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(4px)' }}
     >
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden animate-fadeIn">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-emerald-500 to-teal-600">
+        {/* Header nay */} 
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-blue-700">
           <div className="flex items-center gap-3">
             <Info size={20} className="text-white opacity-80" />
             <h3 className="text-lg font-semibold text-white">Chi tiết Bác sĩ</h3>

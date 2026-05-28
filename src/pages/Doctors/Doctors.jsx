@@ -61,8 +61,8 @@ export default function Doctors() {
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap gap-3 justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Quản lý Bác sĩ</h2>
+      <div className="bg-white flex justify-between sticky z-10 top-0 p-4 rounded-xl shadow-sm border border-gray-200 mb-4 mt-2">
+        <div></div>
         <div className="flex gap-2 flex-wrap">
           <div className="relative">
             <Search
@@ -85,7 +85,7 @@ export default function Doctors() {
             Tìm
           </button>
           <select
-            className="border-gray-300 rounded-lg shadow-sm text-sm border px-3 py-2 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none max-w-[200px]"
+            className="border-gray-300 rounded-lg shadow-sm text-sm border px-3 py-2 focus:ring-2 outline-none max-w-50"
             value={maCk}
             onChange={(e) => {
               setPage(1);

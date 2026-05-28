@@ -68,10 +68,8 @@ export default function Equipment() {
   return (
     <div className="space-y-5">
       {/* Title & Actions */}
-      <div className="flex flex-wrap gap-3 justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">
-          Quản lý Thiết bị y tế
-        </h2>
+      <div className="bg-white flex justify-between sticky z-10 top-0 p-4 rounded-xl shadow-sm border border-gray-200 mb-4 mt-2">
+        <div></div>
         <div className="flex gap-2 flex-wrap">
           <div className="relative">
             <Search
@@ -213,7 +211,7 @@ export default function Equipment() {
                               : "text-green-500 hover:bg-green-50 hover:text-green-700"
                           }`}
                           title={
-                            item.isActive ? "Tắt thiết bị" : "Bật thiết bị"
+                            item.isActive ? "Ẩn thiết bị" : "Hiện thiết bị"
                           }
                         >
                           {item.isActive ? (

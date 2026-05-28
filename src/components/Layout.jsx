@@ -8,9 +8,10 @@ import {
   UserRound,
   Users,
   X,
+  LogOut,
 } from "lucide-react";
 import { useState } from "react";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const navigation = [
   { name: "Tổng quan", to: "/", icon: LayoutDashboard },
@@ -24,17 +25,16 @@ const navigation = [
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-
-  // 1. Lấy thông tin URL hiện tại
   const location = useLocation();
-
-  // 2. Tìm kiếm trang hiện tại đang active trong mảng navigation
+  const navigate = useNavigate();
   const currentNav = navigation.find((item) => item.to === location.pathname);
 
-  const pageTitle =
-    currentNav?.name === "Tổng quan"
-      ? "Tổng quan"
-      : `Quản lý ${currentNav?.name.toLowerCase() || ""}`;
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  const pageTitle = `Quản lý ${currentNav?.name.toLowerCase() || ""}`;
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -93,10 +93,20 @@ export default function Layout() {
               {pageTitle}
             </h1>
           </div>
+          
+          <div className="flex items-center">
+            <button
+              onClick={handleLogout}
+              className="flex items-center px-3 py-2 text-sm font-medium text-red-600 transition-colors rounded-lg hover:bg-red-50 hover:text-red-700"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Đăng xuất
+            </button>
+          </div>
         </header>
 
         <main className="flex-1 overflow-y-auto">
-          <div className="p-4 mx-auto max-w-7xl sm:p-6 lg:p-8">
+          <div className="p-4 mx-auto max-w-7xl sm:p-4 lg:p-6">
             <Outlet />
           </div>
         </main>
