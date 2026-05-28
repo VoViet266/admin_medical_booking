@@ -1,10 +1,12 @@
 import axios from 'axios';
+import { LogOut } from 'lucide-react';
 
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
   imeout: 10000, 
 });
 
@@ -40,6 +42,7 @@ axiosClient.interceptors.response.use(
 export const api = {
   // Auth
   login: (data) => axiosClient.post('/admin/dang-nhap', data), 
+  Logout: () => axiosClient.post('/admin/dang-xuat'),
 
   // Dashboard
   getOverview: () => axiosClient.get('/admin/tong-quan'),
@@ -49,7 +52,6 @@ export const api = {
   getBookingDetail: (id) => axiosClient.get(`/admin/dang-ky/${id}`),
   updateBooking: (id, data) => axiosClient.patch(`/admin/dang-ky/${id}`, data),
   changeBookingStatus: (id, data) => axiosClient.patch(`/admin/dang-ky/${id}/trang-thai`, data),
-
 
   // Users
   getUsers: (params) => axiosClient.get('/admin/nguoi-dung', { params }),
@@ -73,12 +75,15 @@ export const api = {
   getDoctorDetail: (manv) => axiosClient.get(`/admin/bac-si/${manv}`),
   updateDoctorInfo: (manv, data) => axiosClient.put(`/admin/bac-si/${manv}/thong-tin`, data),
   addDoctors: (data) => axiosClient.post('/admin/bac-si', data),
+
+
+
   // Notifications
   sendAllUsersNotification: (data) => axiosClient.post('/thongbao/all-users', data),
-
-  // Lưu ý: Request này method POST nhưng không có body (gửi null), chỉ có query parameters
   scheduleNotification: (params) => axiosClient.post('/thongbao/schedule-delayed', null, { params }),
 
+
+  ///file
   getUrl(path) {
     if (!path) return "";
     if (path.startsWith("http://") || path.startsWith("https://")) {
@@ -87,6 +92,17 @@ export const api = {
     const encodedPath = encodeURIComponent(path);
 
     return `${import.meta.env.VITE_BASE_URL}/file/anh?path=${encodedPath}`;
-  }
+  },
+  
+  uploadFile: (file, folderName) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folderName', folderName);
+    return axiosClient.post('/file/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+  },
+  deleteFile: (filePath) =>
+    axiosClient.delete(`/file/anh?path=${filePath}`),
 
 };

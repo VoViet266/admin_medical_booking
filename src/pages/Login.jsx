@@ -19,7 +19,6 @@ export default function Login() {
     soDienThoai: username, 
     matKhau: password      
     });
-        console.log("response: ", response)
       const token = response.data.accessToken
 
       
@@ -60,6 +59,7 @@ export default function Login() {
               type="text"
               required
               value={username}
+              autoComplete="off"
               onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
               placeholder="Nhập tên đăng nhập"
@@ -72,6 +72,7 @@ export default function Login() {
               type="password"
               required
               value={password}
+              autoComplete="off"
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 mt-1 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
               placeholder="Nhập mật khẩu"

@@ -1,5 +1,5 @@
-import { Edit, Loader2, Save, X } from "lucide-react";
-import { useState } from "react";
+import { Edit, Loader2, Save, Trash2, Upload, X } from "lucide-react";
+import { useState, useRef } from "react";
 import { api } from "../../services/api";
 import ToggleField from "../Specialties/components/ToggleField";
 
@@ -15,6 +15,33 @@ export default function EditModal({ item, onClose, onSaved }) {
   });
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
+  const [pendingFile, setPendingFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const fileInputRef = useRef(null);
+
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setPendingFile(file);
+    setPreviewUrl(URL.createObjectURL(file));
+    e.target.value = "";
+  };
+
+  // Xóa ảnh: gọi API xóa file trên server rồi clear state
+  const handleRemoveImage = async () => {
+    const pathToDelete = form.hinhanh;
+    handleChange("hinhanh", "");
+    setPendingFile(null);
+    setPreviewUrl(null);
+    if (pathToDelete) {
+      try {
+        await api.deleteFile(pathToDelete);
+      } catch {
+        // Không block UI nếu xóa file thất bại
+      }
+    }
+  };
 
   const handleChange = (field, value) =>
     setForm((f) => ({ ...f, [field]: value }));
@@ -27,15 +54,39 @@ export default function EditModal({ item, onClose, onSaved }) {
     }
     setSaving(true);
     setErr("");
+    let hinhanhPath = form.hinhanh.trim();
+    if (pendingFile) {
+      // Nếu đang thay ảnh mới → xóa ảnh cũ trước (nếu có)
+      const oldPath = item?.hinhanh?.trim();
+      if (oldPath && oldPath !== hinhanhPath) {
+        try { await api.deleteFile(oldPath); } catch { /* bỏ qua lỗi xóa */ }
+      }
+      try {
+        const uploadRes = await api.uploadFile(pendingFile, "HinhAnh_ThietBi");
+        console.log(uploadRes)
+        if (uploadRes.success && uploadRes.data) {
+          hinhanhPath = uploadRes.data;
+        
+        } else {
+          setErr(uploadRes.message || "Upload ảnh thất bại");
+          setSaving(false);
+          return;
+        }
+      } catch (uploadErr) {
+        setErr(uploadErr.message || "Upload ảnh thất bại");
+        setSaving(false);
+        return;
+      }
+    }
 
     const payload = {
       tentb: form.tentb.trim(),
-      hinhanh: form.hinhanh.trim(),
+      hinhanh: hinhanhPath,
       mota: form.mota.trim(),
       xuatxu: form.xuatxu.trim(),
       isActive: form.isActive,
     };
-
+    console.log(payload)
     try {
       const res = isEdit
         ? await api.updateEquipment(item.id, payload)
@@ -128,27 +179,64 @@ export default function EditModal({ item, onClose, onSaved }) {
               />
             </div>
 
-            {/* Image URL */}
+            {/* Hình ảnh */}
             <div>
               <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">
-                URL hình ảnh
+                Hình ảnh thiết bị
               </label>
-              <div className="flex gap-2 items-center">
-                <input
-                  type="text"
-                  value={form.hinhanh}
-                  onChange={(e) => handleChange("hinhanh", e.target.value)}
-                  className="flex-1 px-3 py-2.5 rounded-lg border border-gray-300 text-sm focus:ring-2 outline-none transition-all"
-                  placeholder="https://... hoặc đường dẫn file"
-                />
-                {form.hinhanh && (
-                  <img
-                    src={api.getUrl(form.hinhanh)}
-                    alt=""
-                    className="w-10 h-10 rounded-lg object-cover border border-gray-200 shrink-0"
-                    onError={(e) => (e.target.style.display = "none")}
+              <div className="flex gap-3 items-center">
+                {/* Preview: ưu tiên blob URL nếu đang chọn file mới */}
+                <div className="relative w-16 h-16 shrink-0">
+                  <div className="w-16 h-16 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 flex items-center justify-center overflow-hidden">
+                    {previewUrl || form.hinhanh ? (
+                      <img
+                        src={previewUrl || api.getUrl(form.hinhanh)}
+                        alt=""
+                        className="w-full h-full object-cover"
+                        onError={(e) => (e.target.style.display = "none")}
+                      />
+                    ) : (
+                      <Upload size={20} className="text-gray-400" />
+                    )}
+                  </div>
+                  {/* Nút xóa ảnh nhỏ góc trên phải */}
+                  {(previewUrl || form.hinhanh) && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      title="Xóa ảnh"
+                      className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center shadow transition-colors"
+                    >
+                      <X size={10} />
+                    </button>
+                  )}
+                </div>
+                <div className="flex-1 flex flex-col gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-blue-400 text-blue-600 text-sm font-medium hover:bg-blue-50 transition-colors"
+                  >
+                    <Upload size={14} />
+                    {pendingFile ? `Đã chọn: ${pendingFile.name}` : "Chọn ảnh từ máy"}
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleFileChange}
                   />
-                )}
+                  {!pendingFile && form.hinhanh && (
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="flex items-center gap-1.5 text-xs text-red-500 hover:text-red-700 transition-colors w-fit"
+                    >
+                      <Trash2 size={12} /> Xóa ảnh
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
 

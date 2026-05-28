@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { api } from "../services/api";
 
 const navigation = [
   { name: "Tổng quan", to: "/", icon: LayoutDashboard },
@@ -29,9 +30,15 @@ export default function Layout() {
   const navigate = useNavigate();
   const currentNav = navigation.find((item) => item.to === location.pathname);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+  const handleLogout = async () => {  
+    try {
+      await api.Logout();
+    } catch (error) {
+      console.error("Lỗi khi gọi API đăng xuất:", error);
+    } finally {
+      localStorage.removeItem("token");
+      navigate("/login");
+    }
   };
 
   const pageTitle = `Quản lý ${currentNav?.name.toLowerCase() || ""}`;
